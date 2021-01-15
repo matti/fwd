@@ -55,11 +55,15 @@ func proxy(ctx context.Context, localAddress string, remoteAddress string) {
 	}
 }
 func usage() {
-	fmt.Println("usage")
+	fmt.Println("usage: fwd 127.0.0.1:PORT:remote:PORT")
 	os.Exit(1)
 }
 
 func main() {
+	if len(os.Args) == 1 {
+		usage()
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 
 	sigs := make(chan os.Signal, 1)
@@ -95,7 +99,6 @@ func main() {
 		wg.Add(1)
 		go func(localAddress string, remoteAddress string) {
 			proxy(ctx, localAddress, remoteAddress)
-			log.Println("proxy returned")
 			wg.Done()
 		}(localAddress, remoteAddress)
 
